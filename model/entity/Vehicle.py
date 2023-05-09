@@ -17,17 +17,17 @@ class Vehicle(Model):
     capacity: int
     alert: list[AlertKind]
 
-    def save(self, database):
+    def save(self, database) -> None:
         database.Vehicle.insert_one(self.to_bson())
 
     @staticmethod
-    def all(database: Database):
-        return database.Vehicle.find()
+    def all(database: Database) -> list["Vehicle"]:
+        return [Vehicle(**vehicle) for vehicle in database.Vehicle.find()]
 
-    def can_support(self, incident):
+    def can_support(self, incident) -> bool:
         return incident in self.alert
 
-    def haversine(self, incident: Incident):
+    def haversine(self, incident: Incident) -> float:
         return (
                 6367
                 * 2
@@ -58,20 +58,7 @@ class Vehicle(Model):
         )
 
     @staticmethod
-    def filtre_type_incident(all: list, alert: AlertKind):
-        for vehicle in all:
-            if not vehicle.can_support(alert):
-                all.remove(vehicle)
-        return all
+    def filtre_type_incident(vehicle: list["Vehicle"], alert: AlertKind) -> list["Vehicle"]:
+        return [vehicle for vehicle in vehicle if vehicle.can_support(alert)]
 
 
-def tri_distances(vehicules: list[Vehicle], incident: Incident):
-    dict_trie = {}
-    L = [v.haversine(incident) for v in vehicules]
-    d = {vehicules[i]: L[i] for i in range(len(L))}
-    dist_triees = sorted(L)
-    for value in dist_triees:
-        for key, val in d.items():
-            if val == value:
-                dict_trie[key] = value
-    return dict_trie
