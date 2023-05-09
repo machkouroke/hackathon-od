@@ -34,7 +34,7 @@ class Executor:
     @staticmethod
     def run(incident: Incident, database: Database):
         liste_vehicules = Vehicle.all(database)
-        filtered_v_liste: list[Vehicle] = sorted(Vehicle.filtre_type_incident(liste_vehicules, AlertKind.ACCIDENT),
+        filtered_v_liste: list[Vehicle] = sorted(Vehicle.filtre_type_incident(liste_vehicules, incident.kind),
                                                  key=lambda x: x.haversine(incident))
 
         flotte_v = Executor.get_final_fleet(filtered_v_liste, incident)
