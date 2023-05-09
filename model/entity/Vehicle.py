@@ -1,12 +1,12 @@
-from typing import Type, Any
-
-from model.entity.Model import Model
-from model.enum.VehicleKind import VehicleKind
-from model.enum.AlertKind import AlertKind
 import math
-from model.entity.Incident import Incident
+
 import numpy as np
-import enum
+from pymongo.database import Database
+
+from model.entity.Incident import Incident
+from model.entity.Model import Model
+from model.enum.AlertKind import AlertKind
+from model.enum.VehicleKind import VehicleKind
 
 
 class Vehicle(Model):
@@ -17,17 +17,21 @@ class Vehicle(Model):
     capacity: int
     alert: list[AlertKind]
 
-    def save(self):
-        self.database.save_vehicle(self)
+    def save(self, database):
+        database.Vehicle.insert_one(self.to_bson())
+
+    @staticmethod
+    def all(database: Database):
+        return database.Vehicle.find()
 
     def can_support(self, incident):
         return incident in self.alert
 
-    def haversine(self,incident:Incident):
-        distance=6367 * 2 * np.arcsin(np.sqrt(
-        np.sin((np.radians(self.latitude) - math.radians(incident.latitude)) / 2) ** 2 + math.cos(
-            math.radians(incident.latitude)) * np.cos(np.radians(self.latitude) * np.sin(
-            (np.radians(self.longitude) - math.radians(-incident.longitude)) / 2) ** 2)))
+    def haversine(self, incident: Incident):
+        distance = 6367 * 2 * np.arcsin(np.sqrt(
+            np.sin((np.radians(self.latitude) - math.radians(incident.latitude)) / 2) ** 2 + math.cos(
+                math.radians(incident.latitude)) * np.cos(np.radians(self.latitude) * np.sin(
+                (np.radians(self.longitude) - math.radians(-incident.longitude)) / 2) ** 2)))
         return distance
 
     @staticmethod
@@ -36,21 +40,19 @@ class Vehicle(Model):
             if not vehicle.can_support(alert):
                 all.remove(vehicle)
         return all
-def tri_distances(vehicules:list[Vehicle],incident:Incident):
-    L=[]
-    d={}
-    dict_trie={}
+
+
+def tri_distances(vehicules: list[Vehicle], incident: Incident):
+    L = []
+    d = {}
+    dict_trie = {}
     for v in vehicules:
         L.append(v.haversine(incident))
     for i in range(len(L)):
-        d[vehicules[i]]=L[i]
-    dist_triees=sorted(L)
+        d[vehicules[i]] = L[i]
+    dist_triees = sorted(L)
     for value in dist_triees:
         for key, val in d.items():
-            if val==value:
-                dict_trie[key]=value
+            if val == value:
+                dict_trie[key] = value
     return dict_trie
-
-
-
-

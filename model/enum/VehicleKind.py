@@ -1,7 +1,7 @@
 import enum
 
 
-class VehicleKind(enum.Enum):
+class VehicleKind(str, enum.Enum):
     FIRE_TRUCK = "FIRE_TRUCK"
     POLICE_STATION = "POLICE_STATION"
     AMBULANCE = "AMBULANCE"

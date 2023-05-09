@@ -1,7 +1,7 @@
 import enum
 
 
-class AlertKind(enum.Enum):
+class AlertKind(str, enum.Enum):
     INCENDIE = "INCENDIE"
     ACCIDENT = "ACCIDENT"
     Aggression = "AGGRESSION"

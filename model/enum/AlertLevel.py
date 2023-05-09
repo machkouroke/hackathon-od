@@ -1,7 +1,7 @@
 import enum
 
 
-class AlertLevel(enum.Enum):
+class AlertLevel(int, enum.Enum):
     LOW = 1
     MEDIUM = 2
     HIGH = 3
