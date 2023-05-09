@@ -24,8 +24,8 @@ jobs:
         uses: SpicyPizza/create-envfile@v1.3
 
         with:
-          envkey_DB_NAME: ${{ secret.DB_NAME }}
-          envkey_MONGO_URL: ${{ secret.MONGO_URL }}
+          envkey_DB_NAME: ${{ secrets.DB_NAME }}
+          envkey_MONGO_URL: ${{ secrets.MONGO_URL }}
           envkey_MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
           envkey_MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
           directory: .
