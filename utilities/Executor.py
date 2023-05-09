@@ -7,18 +7,6 @@ from model.entity.Vehicle import Vehicle
 from model.enum.AlertKind import AlertKind
 from model.enum.VehicleKind import VehicleKind
 
-v1 = Vehicle(name="v1",
-             latitude=32.894653162718036,
-             longitude=-6.91775606376365,
-             kind=VehicleKind.FIRE_TRUCK,
-             capacity=2,
-             alert=[AlertKind.Aggression, AlertKind.ACCIDENT])
-v2 = Vehicle(name="v2",
-             latitude=33.894653162718036,
-             longitude=-7.91775606376365,
-             kind=VehicleKind.FIRE_TRUCK,
-             capacity=2,
-             alert=[AlertKind.Aggression, AlertKind.INCENDIE])
 
 
 class Executor:

@@ -11,11 +11,7 @@ router = APIRouter()
 
 
 @router.post("/urgences")
-async def root(inc: Incident, database=Depends(get_db)):
-    print(inc.longitude)
+async def root(incident: Incident, database=Depends(get_db)):
     return {
-"sucess": True,
-"data": Executor.run(inc,database)}
-
-
-
+        "success": True,
+        "data": Executor.run(incident, database)}
