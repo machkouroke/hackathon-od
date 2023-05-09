@@ -8,7 +8,6 @@ from model.enum.AlertKind import AlertKind
 from model.enum.VehicleKind import VehicleKind
 
 
-
 class Executor:
 
     @staticmethod
@@ -32,22 +31,21 @@ class Executor:
         return fleet
 
     @staticmethod
-    def run(incident: Incident, database: Database):
-        liste_vehicules = Vehicle.all(database)
-        filtered_v_liste: list[Vehicle] = sorted(Vehicle.filtre_type_incident(liste_vehicules, incident.kind),
+    def run(incident: Incident, database: Database, maps: nx.MultiDiGraph):
+        liste_vehicles = Vehicle.all(database)
+        filtered_v_liste: list[Vehicle] = sorted(Vehicle.filtre_type_incident(liste_vehicles, incident.kind),
                                                  key=lambda x: x.haversine(incident))
 
         flotte_v = Executor.get_final_fleet(filtered_v_liste, incident)
-        G = ox.graph_from_place('Khouribga, Maroc', network_type='drive')
         end = (incident.longitude, incident.latitude)
         data = []
-        for vehicule in flotte_v:
-            start = (vehicule.longitude, vehicule.latitude)
-            start_node = ox.distance.nearest_nodes(G, X=[start[0]], Y=[start[1]])[
+        for vehicle in flotte_v:
+            start = (vehicle.longitude, vehicle.latitude)
+            start_node = ox.distance.nearest_nodes(maps, X=[start[0]], Y=[start[1]])[
                 0]
-            end_node = ox.distance.nearest_nodes(G, X=[end[0]], Y=[end[1]])[0]
-            shortest_path = nx.shortest_path(G, start_node, end_node, weight='length')
-            path = [{"latitude": G.nodes[node]['y'], "longitude": G.nodes[node]["x"]} for node in shortest_path]
-            data += [{"typeVehicle": vehicule.kind, "typeIncident": incident.kind, "path": path}]
+            end_node = ox.distance.nearest_nodes(maps, X=[end[0]], Y=[end[1]])[0]
+            shortest_path = nx.shortest_path(maps, start_node, end_node, weight='length')
+            path = [{"latitude": maps.nodes[node]['y'], "longitude": maps.nodes[node]["x"]} for node in shortest_path]
+            data += [{"typeVehicle": vehicle.kind, "typeIncident": incident.kind, "path": path}]
 
         return data
