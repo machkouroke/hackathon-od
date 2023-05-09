@@ -3,13 +3,15 @@ from fastapi import APIRouter, Depends
 import osmnx as ox
 import networkx as nx
 
+from dependances.dependance import get_db
 from model.entity.Incident import Incident
+from utilities.Executor import Executor
 
 router = APIRouter()
 
 
 @router.post("/urgences")
-async def root(inc: Incident):
+async def root(inc: Incident, database=Depends(get_db)):
     G = ox.graph_from_place('Khouribga, Maroc', network_type='drive')
     end = (inc.longitude, inc.latitude)
     start = (-6.91775606376365, 32.894653162718036)
@@ -29,3 +31,4 @@ async def root(inc: Incident):
 
             }
         ]}
+

@@ -61,4 +61,3 @@ class Vehicle(Model):
     def filtre_type_incident(vehicle: list["Vehicle"], alert: AlertKind) -> list["Vehicle"]:
         return [vehicle for vehicle in vehicle if vehicle.can_support(alert)]
 
-
