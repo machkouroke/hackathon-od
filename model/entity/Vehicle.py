@@ -22,7 +22,7 @@ class Vehicle(Model):
 
     @staticmethod
     def all(database: Database):
-        return database.Vehicle.find()
+        return [Vehicle(**vehicle) for vehicle in database.Vehicle.find()]
 
     def can_support(self, incident):
         return incident in self.alert
@@ -58,11 +58,8 @@ class Vehicle(Model):
         )
 
     @staticmethod
-    def filtre_type_incident(all: list, alert: AlertKind):
-        for vehicle in all:
-            if not vehicle.can_support(alert):
-                all.remove(vehicle)
-        return all
+    def filtre_type_incident(vehicle: list["Vehicle"], alert: AlertKind) -> list["Vehicle"]:
+        return [vehicle for vehicle in vehicle if vehicle.can_support(alert)]
 
 
 def tri_distances(vehicules: list[Vehicle], incident: Incident):
