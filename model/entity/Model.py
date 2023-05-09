@@ -1,11 +1,9 @@
 import inspect
 from typing import Optional, Any
 
-from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field
 
-from dependances.dependance import get_db
 from model.entity.objectId import PydanticObjectId
 
 
