@@ -28,7 +28,7 @@ class Executor:
         return [vehicle for vehicle in vehicle if vehicle.can_support(alert)]
 
     @staticmethod
-    def get_final_fleet(vehicles: list[Vehicle], incident: Incident):
+    def get_final_fleet(vehicles: list[Vehicle], incident: Incident) -> list[Vehicle]:
         total_cap = 0
         fleet = []
 
@@ -44,36 +44,22 @@ class Executor:
         return fleet
 
     @staticmethod
-    def run(incident: Incident,database:Database):
-        liste_vehicules =Vehicle.all(database)
-        l_v = Vehicle.filtre_type_incident(liste_vehicules, AlertKind.ACCIDENT)
-        L = []
-        for v in l_v:
-            L.append(v.haversine(incident))
-        d = []
-        d=[(l_v[i],L[i])  for i in range(len(l_v))]
-        sorted_liste_tuples = sorted(d, key=lambda x: x[1])
-        voitures_=[x[0] for x in sorted_liste_tuples]
-        flotte_v = Executor.get_final_fleet(voitures_, incident)
-        print(flotte_v)
+    def run(incident: Incident, database: Database):
+        liste_vehicules = Vehicle.all(database)
+        filtered_v_liste: list[Vehicle] = sorted(Vehicle.filtre_type_incident(liste_vehicules, AlertKind.ACCIDENT),
+                                                 key=lambda x: x.haversine(incident))
+
+        flotte_v = Executor.get_final_fleet(filtered_v_liste, incident)
         G = ox.graph_from_place('Khouribga, Maroc', network_type='drive')
-        for f in flotte_v:
-            end = (incident.longitude, incident.latitude)
-            start = (f.latitude, f.longitude)
-            print(start)
+        end = (incident.longitude, incident.latitude)
+        data = []
+        for vehicule in flotte_v:
+            start = (vehicule.longitude, vehicule.latitude)
             start_node = ox.distance.nearest_nodes(G, X=[start[0]], Y=[start[1]])[
                 0]
             end_node = ox.distance.nearest_nodes(G, X=[end[0]], Y=[end[1]])[0]
             shortest_path = nx.shortest_path(G, start_node, end_node, weight='length')
-            #ox.plot_graph_route(G, shortest_path)
             path = [{"latitude": G.nodes[node]['y'], "longitude": G.nodes[node]["x"]} for node in shortest_path]
-            return {
-                "success": True,
-                "data": [
-                    {
-                        "typeVehicle": "",
-                        "typeIncident": "",
-                        "path": path
+            data += [{"typeVehicle": vehicule.kind, "typeIncident": incident.kind, "path": path}]
 
-                    }
-                ]}
+        return data

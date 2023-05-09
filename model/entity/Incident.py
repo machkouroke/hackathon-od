@@ -1,6 +1,7 @@
 from pymongo.database import Database
 
 from model.entity.Model import Model
+from model.enum.AlertKind import AlertKind
 
 
 class Incident(Model):
@@ -9,6 +10,7 @@ class Incident(Model):
     latitude: float
     longitude: float
     level: int
+    kind:AlertKind
 
     def save(self, database: Database):
         database.Incidents.insert_one(self.to_bson())
