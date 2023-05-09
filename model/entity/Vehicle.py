@@ -28,11 +28,34 @@ class Vehicle(Model):
         return incident in self.alert
 
     def haversine(self, incident: Incident):
-        distance = 6367 * 2 * np.arcsin(np.sqrt(
-            np.sin((np.radians(self.latitude) - math.radians(incident.latitude)) / 2) ** 2 + math.cos(
-                math.radians(incident.latitude)) * np.cos(np.radians(self.latitude) * np.sin(
-                (np.radians(self.longitude) - math.radians(-incident.longitude)) / 2) ** 2)))
-        return distance
+        return (
+                6367
+                * 2
+                * np.arcsin(
+            np.sqrt(
+                np.sin(
+                    (
+                            np.radians(self.latitude)
+                            - math.radians(incident.latitude)
+                    )
+                    / 2
+                )
+                ** 2
+                + math.cos(math.radians(incident.latitude))
+                * np.cos(
+                    np.radians(self.latitude)
+                    * np.sin(
+                        (
+                                np.radians(self.longitude)
+                                - math.radians(-incident.longitude)
+                        )
+                        / 2
+                    )
+                    ** 2
+                )
+            )
+        )
+        )
 
     @staticmethod
     def filtre_type_incident(all: list, alert: AlertKind):
@@ -43,13 +66,9 @@ class Vehicle(Model):
 
 
 def tri_distances(vehicules: list[Vehicle], incident: Incident):
-    L = []
-    d = {}
     dict_trie = {}
-    for v in vehicules:
-        L.append(v.haversine(incident))
-    for i in range(len(L)):
-        d[vehicules[i]] = L[i]
+    L = [v.haversine(incident) for v in vehicules]
+    d = {vehicules[i]: L[i] for i in range(len(L))}
     dist_triees = sorted(L)
     for value in dist_triees:
         for key, val in d.items():
